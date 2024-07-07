@@ -1,0 +1,109 @@
+ if (!_input.hasNext("(?<=^|\n)\\*.*")) {
+            throw new EnigmaException("Invalid start of input file.");
+        }
+        String settingline = _input.nextLine();
+        Scanner setting = new Scanner(settingline);
+        if (!setting.hasNext("\\*")) {
+            throw new EnigmaException("setting format is incorrect");
+        }
+        String[] rotorset = new String[amachine.numRotors()];
+        if (setting.next().equals("*")) {
+            String reflectorname = setting.next();
+            if (!amachine.getAllrotormap().containsKey(reflectorname)) {
+                throw new EnigmaException("First name is not a refl"); //first not refl 7
+            }
+            rotorset[0] = reflectorname;
+        }
+        int rotint = 1;
+        for (int i = 1; i < amachine.numRotors(); i++) {
+            String name = setting.next();
+            if (!amachine.getAllrotormap().containsKey(name)) {
+                throw new EnigmaException("Rotor try to set does not exist\\"
+                        + "in the machine's usable rotor"); //rotor misname 4
+            }
+            for (String names: rotorset) {
+                if (names == null) {
+                    break;
+                }
+                if (name.equals(names)) {
+                    throw new EnigmaException("Roto"
+                            + "r repeated"); //repeated rotor 5
+                }
+            }
+            rotorset[rotint] = name;
+            rotint += 1;
+        }
+        amachine.insertRotors(rotorset);
+        String rotorsetting = "";
+        String ringsetting = "";
+        String permcycle = "";
+        if (!setting.hasNext() || setting.hasNext("\\(")) {
+            throw new EnigmaException("There is not initial setting");
+        }
+        while (setting.hasNext()) {
+            String nex = setting.next();
+            if (!nex.contains("(")) {
+                rotorsetting = nex;
+            } else if (nex.contains("(")) {
+                permcycle = permcycle + nex;
+            }
+        }
+        Permutation plugboard = new Permutation(permcycle, _alphabet);
+        amachine.setPlugboard(plugboard);
+        amachine.setRotors(rotorsetting);
+        //setUp(amachine, ringsetting+);
+
+        while (_input.hasNextLine() && !_input.hasNext("(?<=^|\n)\\*.*")) {
+            String line = _input.nextLine();
+            String newline = line.replaceAll("[ \\t]", "");
+            String printed = amachine.convert(newline);
+            printMessageLine(printed);
+        }
+        System.out.print("\n");
+        /** decryption process. */
+        amachine.setRotors(rotorsetting);
+        if (!_input.nextLine().equals(settingline)) {
+            throw new EnigmaException("Enigma decryption setting is wrong");
+        } else {
+            while (_input.hasNextLine() && !_input.hasNext("(?<=^|\n)\\*.*")) {
+                String line = _input.nextLine();
+                String newline = line.replaceAll("[ \\t]", "");
+                String printed = amachine.convert(newline);
+                printMessageLine(printed);
+            }
+
+
+IWASS CARED OFCOD INGIN JAVA
+
+HGJNB OKDWA LBFKU CMUTJ ZUIO
+XTYQF BDZRG BYFZC ASYRU
+UAAFW OAGFK OCJGM UMOPC HTAVR SA
+HXHFR UXOFC BLRYS DXFCZ XGVFA NA
+CNBZH SNQMC MNIRW MTTTQ BRNKR XDRPN 11
+AJIRV IFOVC TKGNU CKUMB ITFEN V
+
+
+rotor settings:
+* B Beta I II III AAAA (TD) (KC) (JZ)
+  rf nm  Q  E  V
+
+
+all rotors:
+5 3
+ I MQ      (AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)
+ II ME     (FIXVYOMW) (CDKLHUP) (ESZ) (BJ) (GR) (NT) (A) (Q)
+ III MV    (ABDHPEJT) (CFLVMZOYQIRWUKXSG) (N)
+ IV MJ     (AEPLIYWCOXMRFZBSTGJQNH) (DV) (KU)
+ V MZ      (AVOLDRWFIUQ)(BZKSMNHYC) (EGTJPX)
+ VI MZM    (AJQDVLEOZWIYTS) (CGMNHFUX) (BPRK)
+ VII MZM   (ANOUPFRIMBZTLWKSVEGCJYDHXQ)
+ VIII MZM  (AFLSETWUNDHOZVICQ) (BKJ) (GXY) (MPR)
+ Beta N    (ALBEVFCYODJWUGNMQTZSKPR) (HIX)
+ Gamma N   (AFNIRLBSQWVXGUZDKMTPCOYJHE)
+ B R       (AE) (BN) (CK) (DQ) (FU) (GY) (HW) (IJ) (LO) (MP)
+           (RX) (SZ) (TV)
+ C R       (AR) (BD) (CO) (EJ) (FN) (GT) (HK) (IV) (LM) (PW)
+           (QZ) (SX) (UY)
+
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+A B C D E F G H I J K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z
