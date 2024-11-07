@@ -26,14 +26,79 @@ public final class Main {
      *  standard output. Exits normally if there are no errors in the input;
      *  otherwise with code 1. */
     public static void main(String... args) {
-        try {
-            new Main(args).process();
-            return;
-        } catch (EnigmaException excp) {
-            System.err.printf("Error: %s%n", excp.getMessage());
+        if (args.length == 0) {
+            new Main();
+        } else {
+            try {
+                new Main(args).process();
+                return;
+            } catch (EnigmaException excp) {
+                System.err.printf("Error: %s%n", excp.getMessage());
+            }
+            System.exit(1);
         }
-        System.exit(1);
+
+
     }
+
+    /** This Main method will open up the GUI method and proceed on GUI for encrytpion. */
+    Main() {
+        _gui = new GUI(this);
+        _gui.createAndShowGUI();
+        //assorting the input and the out put of the encrpytion
+
+    }
+
+
+    /** Configure an Enigma machine from the input of the GUI's config input,
+     * plugboard input. And sending the result to the GUI's result text field.
+     */
+
+    public String guiProcess(Scanner configuration, Scanner input) {
+        _config = configuration;
+        _input = input;
+
+        String total = "";
+        Machine amachine = readConfig();
+        while (_input.hasNextLine()) {
+            String linefrominput = _input.nextLine();
+
+            if (linefrominput.contains("*")) {
+                setUp(amachine, linefrominput);
+            } else if (linefrominput.isEmpty()) {
+                _output.println();
+            } else {
+                String nospace = linefrominput.replaceAll("\\s+",
+                        "");
+
+                String converted = amachine.convert(nospace);
+                total += stringformat(converted) + '\n';
+            }
+        }
+        return total;
+
+    }
+
+    /** Formating the output string. */
+    public String stringformat(String msg) {
+        int head = 0;
+        String out = "";
+        while (head < msg.length()) {
+            if (head + 5 <= msg.length()) {
+                out += msg.substring(head, head + 5) + " ";
+                head += 5;
+            } else {
+                out += msg.substring(head);
+                head += 5;
+            }
+        }
+        return out;
+    }
+
+
+
+
+
 
     /** Check ARGS and open the necessary files (see comment on main). */
     Main(String[] args) {
@@ -72,13 +137,21 @@ public final class Main {
         }
     }
 
+
     /** Configure an Enigma machine from the contents of configuration
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
-    private void process() {
+     public void process() {
+
+
+
+
+
+
         Machine amachine = readConfig();
         while (_input.hasNextLine()) {
             String linefrominput = _input.nextLine();
+
             if (linefrominput.contains("*")) {
                 setUp(amachine, linefrominput);
             } else if (linefrominput.isEmpty()) {
@@ -91,6 +164,9 @@ public final class Main {
             }
         }
     }
+
+
+
 
     /** Return an Enigma machine configured from the contents of configuration
      *  file _config. */
@@ -105,6 +181,7 @@ public final class Main {
                 throw new EnigmaException("WRonginput, no pawls");
             }
             int pawls = _config.nextInt();
+
             Collection<Rotor> rotors = new ArrayList<>();
             while (_config.hasNext()) {
                 if (rotors.add(readRotor())) {
@@ -244,6 +321,9 @@ public final class Main {
         }
         return setting;
     }
+
+    /** The GUI of machine, input and output. */
+    private GUI _gui;
 
     /** Alphabet used in this machine. */
     private Alphabet _alphabet;
